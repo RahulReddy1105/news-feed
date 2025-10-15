@@ -1,0 +1,47 @@
+{
+  "name": "ai-news-feed",
+  "version": "2.0.0",
+  "description": "AI-powered personalized news feed inspired by Artifact",
+  "main": "main.py",
+  "scripts": {
+    "dev": "python main.py",
+    "build": "echo 'Building AI News Feed...'",
+    "install-deps": "pip install -r requirements.txt",
+    "start": "python main.py"
+  },
+  "keywords": [
+    "ai",
+    "news",
+    "personalization",
+    "machine-learning",
+    "flask",
+    "recommendation-engine"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "flask": "^2.3.0",
+    "sentence-transformers": "^2.2.0",
+    "scikit-learn": "^1.3.0",
+    "requests": "^2.31.0",
+    "numpy": "^1.24.0",
+    "openai": "^1.0.0",
+    "nltk": "^3.8.0",
+    "textblob": "^0.17.0",
+    "redis": "^4.6.0",
+    "sqlalchemy": "^2.0.0",
+    "flask-cors": "^4.0.0",
+    "python-dotenv": "^1.0.0",
+    "beautifulsoup4": "^4.12.0",
+    "feedparser": "^6.0.0",
+    "newspaper3k": "^0.2.8",
+    "pandas": "^2.0.0",
+    "plotly": "^5.15.0"
+  },
+  "devDependencies": {
+    "pytest": "^7.4.0",
+    "pytest-flask": "^1.2.0",
+    "black": "^23.0.0",
+    "flake8": "^6.0.0"
+  }
+}

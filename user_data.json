@@ -1,0 +1,54 @@
+{
+  "0b9fe427": {
+    "liked_articles": [
+      "d5e4d288"
+    ],
+    "disliked_articles": [],
+    "read_articles": [],
+    "topic_preferences": {},
+    "sentiment_preferences": {
+      "positive": 0,
+      "negative": 0,
+      "neutral": 1
+    },
+    "reading_time_preferences": [],
+    "engagement_history": []
+  },
+  "7f009c39": {
+    "liked_articles": [
+      "84685b25"
+    ],
+    "disliked_articles": [],
+    "read_articles": [],
+    "topic_preferences": {
+      "technology": 1
+    },
+    "sentiment_preferences": {
+      "positive": 0,
+      "negative": 0,
+      "neutral": 1
+    },
+    "reading_time_preferences": [],
+    "engagement_history": []
+  },
+  "3818da35": {
+    "liked_articles": [
+      "fcdddb4a",
+      "0ece798b"
+    ],
+    "disliked_articles": [],
+    "read_articles": [],
+    "topic_preferences": {
+      "sports": 1,
+      "technology": 1,
+      "politics": 1
+    },
+    "sentiment_preferences": {
+      "positive": 1,
+      "negative": 0,
+      "neutral": 1
+    },
+    "reading_time_preferences": [],
+    "engagement_history": []
+  }
+}

@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artifact AI News - Personalized News Feed</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #1a1a1a;
+      --secondary-color: #2d2d2d;
+      --accent-color: #007AFF;
+      --text-primary: #ffffff;
+      --text-secondary: #8e8e93;
+      --text-tertiary: #636366;
+      --border-color: #3a3a3c;
+      --success-color: #30d158;
+      --warning-color: #ff9500;
+      --error-color: #ff3b30;
+      --background-primary: #000000;
+      --background-secondary: #1c1c1e;
+      --background-tertiary: #2c2c2e;
+      --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.3);
+      --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.4);
+      --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.5);
+      --border-radius: 12px;
+      --border-radius-small: 8px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Theme toggle styles and light theme variables */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      margin-right: 0.5rem;
+    }
+
+    .theme-switch {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      background: var(--background-tertiary);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      transition: background 0.2s ease;
+    }
+
+    .theme-switch .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      background: var(--background-primary);
+      border-radius: 50%;
+      transition: transform 0.18s ease, background 0.18s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    body.light .theme-switch {
+      background: #dcdcdc;
+      border-color: #cfcfcf;
+    }
+
+    body.light .theme-switch .knob {
+      transform: translateX(20px);
+      background: #ffffff;
+    }
+
+    /* Light theme variable overrides */
+    body.light {
+      --primary-color: #f7f7f7;
+      --secondary-color: #ffffff;
+      --accent-color: #007AFF;
+      --text-primary: #111111;
+      --text-secondary: #4a4a4a;
+      --text-tertiary: #6b6b6b;
+      --border-color: #e0e0e0;
+      --background-primary: #ffffff;
+      --background-secondary: #f6f7f9;
+      --background-tertiary: #fafafa;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--background-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--background-secondary) 0%, var(--background-tertiary) 100%);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 1rem 0;
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .logo i {
+      color: var(--accent-color);
+      font-size: 1.8rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Theme toggle */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .theme-switch {
+      position: relative;
+      width: 46px;
+      height: 26px;
+      background: var(--background-tertiary);
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      transition: background 0.2s ease;
+    }
+
+    .theme-switch .knob {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 22px;
+      height: 22px;
+      background: var(--background-primary);
+      border-radius: 50%;
+      transition: transform 0.18s ease, background 0.18s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    body.light .theme-switch {
+      background: #dcdcdc;
+      border-color: #cfcfcf;
+    }
+
+    body.light .theme-switch .knob {
+      transform: translateX(20px);
+      background: #ffffff;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: var(--border-radius-small);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0056b3;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-medium);
+    }
+
+    .btn-secondary {
+      background: var(--background-tertiary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-color);
+      color: var(--text-primary);
+    }
+
+    /* Navigation */
+    .nav {
+      background: var(--background-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 2rem;
+      overflow-x: auto;
+    }
+
+    .nav-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-item {
+      padding: 1rem 0;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: var(--transition);
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+    }
+
+    .nav-item:hover,
+    .nav-item.active {
+      color: var(--accent-color);
+      border-bottom-color: var(--accent-color);
+    }
+
+    /* Main Content */
+    .main-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .articles-section {
+      min-height: 100vh;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    /* Article Cards */
+    .articles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    /* List view adjustments */
+    .articles-grid.list-view {
+      grid-template-columns: 1fr;
+    }
+
+    .article-card {
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .article-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-heavy);
+      border-color: var(--accent-color);
+    }
+
+    .article-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      background: var(--background-tertiary);
+    }
+
+    /* In list view, make images taller and keep full-width */
+    .articles-grid.list-view .article-image {
+      height: 420px; /* larger hero image for single-column */
+      object-fit: cover;
+    }
+
+    .article-content {
+      padding: 1.5rem;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--text-tertiary);
+    }
+
+    .article-source {
+      font-weight: 500;
+      color: var(--accent-color);
+    }
+
+    .article-time {
+      color: var(--text-tertiary);
+    }
+
+    .article-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .article-description {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .article-topics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .topic-tag {
+      background: var(--background-tertiary);
+      color: var(--text-secondary);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    .article-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: var(--border-radius-small);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.85rem;
+    }
+
+    .action-btn:hover {
+      background: var(--background-tertiary);
+      color: var(--text-primary);
+    }
+
+    .action-btn.liked {
+      color: var(--success-color);
+    }
+
+    .action-btn.disliked {
+      color: var(--error-color);
+    }
+
+    .read-time {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      margin-left: auto;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-card {
+      background: var(--background-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--border-radius);
+      padding: 1.5rem;
+    }
+
+    .sidebar-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .recommendation-item {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .recommendation-item:last-child {
+      border-bottom: none;
+    }
+
+    .recommendation-item:hover {
+      background: var(--background-tertiary);
+      margin: 0 -1rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--border-radius-small);
+    }
+
+    .recommendation-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+
+    .recommendation-meta {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+    }
+
+    /* Loading States */
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      color: var(--text-secondary);
+    }
+
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--border-color);
+      border-top: 2px solid var(--accent-color);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: var(--transition);
+    }
+
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: var(--background-secondary);
+      border-radius: var(--border-radius);
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      transform: scale(0.9);
+      transition: var(--transition);
+    }
+
+    .modal.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        order: -1;
+      }
+      
+      .articles-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .header-content {
+        padding: 0 1rem;
+      }
+      
+      .main-content {
+        padding: 1rem;
+      }
+      
+      .nav-content {
+        padding: 0 1rem;
+      }
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .article-card {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .article-card:nth-child(2) { animation-delay: 0.1s; }
+    .article-card:nth-child(3) { animation-delay: 0.2s; }
+    .article-card:nth-child(4) { animation-delay: 0.3s; }
+    .article-card:nth-child(5) { animation-delay: 0.4s; }
+    .article-card:nth-child(6) { animation-delay: 0.5s; }
+
+    /* Sentiment indicators */
+    .sentiment-positive {
+      border-left: 3px solid var(--success-color);
+    }
+
+    .sentiment-negative {
+      border-left: 3px solid var(--error-color);
+    }
+
+    .sentiment-neutral {
+      border-left: 3px solid var(--text-tertiary);
+    }
+
+    /* Engagement indicators */
+    .engagement-high {
+      box-shadow: 0 0 0 1px var(--success-color);
+    }
+
+    .engagement-medium {
+      box-shadow: 0 0 0 1px var(--warning-color);
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-brain"></i>
+        <span>AI-BASED PERSONALIZED NEWS FEED</span>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="refreshNews()">
+          <i class="fas fa-sync-alt"></i>
+          Refresh
+        </button>
+        <button class="btn btn-primary" onclick="showProfile()">
+          <i class="fas fa-user"></i>
+          Profile
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-content">
+      <a href="#" class="nav-item active" data-filter="all">All Stories</a>
+      <a href="#" class="nav-item" data-filter="recommended">For You</a>
+      <a href="#" class="nav-item" data-filter="trending">Trending</a>
+      <a href="#" class="nav-item" data-filter="technology">Technology</a>
+  <a href="#" class="nav-item" data-filter="business">Business</a>
+  <a href="#" class="nav-item" data-filter="sports">Sports</a>
+  <a href="#" class="nav-item" data-filter="politics">Politics</a>
+    </div>
+  </nav>
+
+  <!-- Search bar (placed after the politics header) -->
+  <div class="nav-search" style="max-width:1200px;margin:12px auto;padding:0 2rem;display:flex;align-items:center;gap:12px;">
+    <input id="global-search" type="search" placeholder="Search news by title, summary, source, or topic..." style="flex:1;padding:10px 12px;border-radius:8px;border:1px solid #333;background:#0f0f0f;color:#fff;">
+    <div class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark">
+      <div class="theme-switch" id="theme-switch"><div class="knob"></div></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="content-grid">
+      <!-- Articles Section -->
+      <section class="articles-section">
+        <div class="section-header">
+          <h2 class="section-title">Today's Stories</h2>
+          <div class="view-controls">
+            <button class="btn btn-secondary" onclick="toggleView('grid')">
+              <i class="fas fa-th"></i>
+            </button>
+            <button class="btn btn-secondary" onclick="toggleView('list')">
+              <i class="fas fa-list"></i>
+            </button>
+          </div>
+  </div>
+
+        <div class="articles-grid" id="articles-grid">
+    {% if error %}
+            <div class="loading">
+              <i class="fas fa-exclamation-triangle"></i>
+              <span>{{ error }}</span>
+            </div>
+    {% elif articles|length == 0 %}
+            <div class="loading">
+              <div class="spinner"></div>
+              <span>Loading stories...</span>
+            </div>
+    {% else %}
+      {% for article in articles %}
+            <article class="article-card sentiment-{{ article.sentiment }}" 
+                     data-article-id="{{ article.id }}"
+                     data-topics="{{ article.topics|join(',') }}"
+                     onclick="openArticle('{{ article.url }}')">
+        {% if article.image %}
+              <img src="{{ article.image }}" alt="{{ article.title }}" class="article-image" onerror="this.style.display='none'">
+              {% endif %}
+              <div class="article-content">
+                <div class="article-meta">
+                  <span class="article-source">{{ article.source }}</span>
+                  <span class="article-time">{{ article.publishedAt[:10] if article.publishedAt else 'Today' }}</span>
+                  <span class="read-time">{{ article.read_time }} min read</span>
+                </div>
+                
+                <h3 class="article-title">{{ article.title }}</h3>
+                <p class="article-description">{{ article.summary or article.description }}</p>
+                
+                <div class="article-topics">
+                  {% for topic in article.topics[:3] %}
+                  <span class="topic-tag">{{ topic }}</span>
+                  {% endfor %}
+                </div>
+                
+                <div class="article-actions">
+                  <button class="action-btn like-btn" onclick="event.stopPropagation(); toggleLike('{{ article.id }}')">
+                    <i class="fas fa-heart"></i>
+                    <span>Like</span>
+                  </button>
+                  <button class="action-btn dislike-btn" onclick="event.stopPropagation(); toggleDislike('{{ article.id }}')">
+                    <i class="fas fa-thumbs-down"></i>
+                    <span>Dislike</span>
+                  </button>
+                  <button class="action-btn" onclick="event.stopPropagation(); summarizeArticle('{{ article.id }}')">
+                    <i class="fas fa-compress-alt"></i>
+                    <span>Summarize</span>
+                  </button>
+                  <button class="action-btn" onclick="event.stopPropagation(); rewriteHeadline('{{ article.id }}')">
+                    <i class="fas fa-edit"></i>
+                    <span>Rewrite</span>
+                  </button>
+                  <button class="action-btn" onclick="event.stopPropagation(); markAsRead('{{ article.id }}')">
+                    <i class="fas fa-check"></i>
+                    <span>Mark Read</span>
+                  </button>
+                </div>
+              </div>
+            </article>
+            {% endfor %}
+        {% endif %}
+        </div>
+      </section>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <!-- Recommendations -->
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">
+            <i class="fas fa-magic"></i>
+            For You
+          </h3>
+          <div id="recommendations-list">
+            <div class="loading">
+              <div class="spinner"></div>
+              <span>Loading recommendations...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trending Topics -->
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">
+            <i class="fas fa-fire"></i>
+            Trending Topics
+          </h3>
+          <div id="trending-topics">
+            {% if topic_clusters %}
+              {% for cluster_id, article_indices in topic_clusters.items() %}
+              <div class="recommendation-item" onclick="filterByTopic('{{ cluster_id }}')">
+                <div class="recommendation-title">Topic Cluster {{ cluster_id|int + 1 }}</div>
+                <div class="recommendation-meta">{{ article_indices|length }} articles</div>
+      </div>
+      {% endfor %}
+            {% else %}
+              <div class="recommendation-item">
+                <div class="recommendation-title">No topics available</div>
+              </div>
+    {% endif %}
+          </div>
+        </div>
+
+        <!-- User Stats -->
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">
+            <i class="fas fa-chart-line"></i>
+            Your Stats
+          </h3>
+          <div id="user-stats">
+            <div class="recommendation-item">
+              <div class="recommendation-title">Articles Liked</div>
+              <div class="recommendation-meta" id="liked-count">0</div>
+            </div>
+            <div class="recommendation-item">
+              <div class="recommendation-title">Articles Read</div>
+              <div class="recommendation-meta" id="read-count">0</div>
+            </div>
+            <div class="recommendation-item">
+              <div class="recommendation-title">Reading Time</div>
+              <div class="recommendation-meta" id="reading-time">0 min</div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+
+  <!-- Modals -->
+  <div class="modal" id="summary-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">AI Summary</h3>
+        <button class="modal-close" onclick="closeModal('summary-modal')">&times;</button>
+      </div>
+      <div id="summary-content"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="headline-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Headline Rewrite</h3>
+        <button class="modal-close" onclick="closeModal('headline-modal')">&times;</button>
+      </div>
+      <div id="headline-content"></div>
+    </div>
+  </div>
+
+  <div class="modal" id="profile-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Your Profile</h3>
+        <button class="modal-close" onclick="closeModal('profile-modal')">&times;</button>
+      </div>
+      <div id="profile-content"></div>
+    </div>
+  </div>
+
+  <script>
+    // Global state
+    let currentView = 'grid';
+    let userProfile = null;
+    let likedArticles = new Set();
+    let dislikedArticles = new Set();
+    let readArticles = new Set();
+
+    // Initialize app
+    document.addEventListener('DOMContentLoaded', function() {
+      loadRecommendations();
+      loadUserProfile();
+      setupNavigation();
+      setupSearch();
+      setupTheme();
+      updateUserStats();
+    });
+
+    // Theme functions
+    function setupTheme() {
+      const saved = localStorage.getItem('theme');
+      if (saved === 'light') {
+        document.body.classList.add('light');
+      } else {
+        document.body.classList.remove('light');
+      }
+    }
+
+    function toggleTheme() {
+      if (document.body.classList.contains('light')) {
+        document.body.classList.remove('light');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.body.classList.add('light');
+        localStorage.setItem('theme', 'light');
+      }
+    }
+
+    // Search functionality
+    function setupSearch() {
+      const input = document.getElementById('global-search');
+      if (!input) return;
+      let timeout = null;
+      input.addEventListener('input', function(e) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          const q = input.value.trim();
+          searchArticles(q);
+        }, 200);
+      });
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          input.value = '';
+          searchArticles('');
+        }
+      });
+    }
+
+    function searchArticles(query) {
+      const q = (query || '').toLowerCase().trim();
+      const articles = document.querySelectorAll('.article-card');
+
+      if (!q) {
+        // If empty, show according to current nav filter
+        const active = document.querySelector('.nav-item.active');
+        const filter = active ? active.dataset.filter : 'all';
+        filterArticles(filter);
+        return;
+      }
+
+      articles.forEach(article => {
+        const title = (article.querySelector('.article-title')?.textContent || '').toLowerCase();
+        const original = (article.dataset.originalTitle || '').toLowerCase();
+        const summary = (article.querySelector('.article-description')?.textContent || '').toLowerCase();
+        const desc = (article.dataset.description || '').toLowerCase();
+        const source = (article.querySelector('.article-source')?.textContent || '').toLowerCase();
+        const topics = (article.dataset.topics || '').toLowerCase();
+
+        const match = title.includes(q) || original.includes(q) || summary.includes(q) || desc.includes(q) || source.includes(q) || topics.includes(q);
+        article.style.display = match ? 'block' : 'none';
+      });
+    }
+
+    // Navigation functionality
+    function setupNavigation() {
+      const navItems = document.querySelectorAll('.nav-item');
+      navItems.forEach(item => {
+        item.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Update active state
+          navItems.forEach(nav => nav.classList.remove('active'));
+          this.classList.add('active');
+          
+          // Filter articles
+          const filter = this.dataset.filter;
+          filterArticles(filter);
+        });
+      });
+    }
+
+    function filterArticles(filter) {
+      const articles = document.querySelectorAll('.article-card');
+      
+      articles.forEach(article => {
+        const topics = article.dataset.topics.toLowerCase();
+        let show = true;
+        
+        switch(filter) {
+          case 'recommended':
+            // Show recommended articles (for now, show all)
+            break;
+          case 'trending':
+            // Show high engagement articles
+            const engagement = parseFloat(article.dataset.engagement || 0.5);
+            show = engagement > 0.7;
+            break;
+          case 'technology':
+            show = topics.includes('technology') || topics.includes('tech') || topics.includes('ai');
+            break;
+          case 'business':
+            show = topics.includes('business') || topics.includes('economy') || topics.includes('finance');
+            break;
+          case 'politics':
+            show = topics.includes('politics') || topics.includes('government') || topics.includes('election');
+            break;
+          case 'sports':
+            show = topics.includes('sports') || topics.includes('football') || topics.includes('basketball') || topics.includes('baseball') || topics.includes('soccer') || topics.includes('game');
+            break;
+            break;
+          default:
+            show = true;
+        }
+        
+        article.style.display = show ? 'block' : 'none';
+      });
+    }
+
+    // Article interactions
+    async function toggleLike(articleId) {
+      try {
+        const response = await fetch('/api/like', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({article_id: articleId})
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          const likeBtn = document.querySelector(`[data-article-id="${articleId}"] .like-btn`);
+          const dislikeBtn = document.querySelector(`[data-article-id="${articleId}"] .dislike-btn`);
+          
+          if (likedArticles.has(articleId)) {
+            likedArticles.delete(articleId);
+            likeBtn.classList.remove('liked');
+            likeBtn.innerHTML = '<i class="fas fa-heart"></i><span>Like</span>';
+          } else {
+            likedArticles.add(articleId);
+            dislikedArticles.delete(articleId);
+            likeBtn.classList.add('liked');
+            likeBtn.innerHTML = '<i class="fas fa-heart"></i><span>Liked</span>';
+            dislikeBtn.classList.remove('disliked');
+            dislikeBtn.innerHTML = '<i class="fas fa-thumbs-down"></i><span>Dislike</span>';
+          }
+          
+          updateUserStats();
+          showToast(data.message, 'success');
+        } else {
+          showToast(data.error, 'error');
+        }
+      } catch (error) {
+        showToast('Error liking article', 'error');
+      }
+    }
+
+    async function toggleDislike(articleId) {
+      try {
+        const response = await fetch('/api/dislike', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({article_id: articleId})
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          const likeBtn = document.querySelector(`[data-article-id="${articleId}"] .like-btn`);
+          const dislikeBtn = document.querySelector(`[data-article-id="${articleId}"] .dislike-btn`);
+          
+          if (dislikedArticles.has(articleId)) {
+            dislikedArticles.delete(articleId);
+            dislikeBtn.classList.remove('disliked');
+            dislikeBtn.innerHTML = '<i class="fas fa-thumbs-down"></i><span>Dislike</span>';
+          } else {
+            dislikedArticles.add(articleId);
+            likedArticles.delete(articleId);
+            dislikeBtn.classList.add('disliked');
+            dislikeBtn.innerHTML = '<i class="fas fa-thumbs-down"></i><span>Disliked</span>';
+            likeBtn.classList.remove('liked');
+            likeBtn.innerHTML = '<i class="fas fa-heart"></i><span>Like</span>';
+          }
+          
+          updateUserStats();
+          showToast(data.message, 'success');
+        } else {
+          showToast(data.error, 'error');
+        }
+      } catch (error) {
+        showToast('Error disliking article', 'error');
+      }
+    }
+
+    async function markAsRead(articleId) {
+      try {
+        const response = await fetch('/api/read', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({article_id: articleId})
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          readArticles.add(articleId);
+          updateUserStats();
+          showToast(data.message, 'success');
+        } else {
+          showToast(data.error, 'error');
+        }
+      } catch (error) {
+        showToast('Error marking article as read', 'error');
+      }
+    }
+
+    // AI Features
+    async function summarizeArticle(articleId) {
+      showLoading('summary-modal');
+      
+      try {
+        const response = await fetch('/api/summarize', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({article_id: articleId})
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          document.getElementById('summary-content').innerHTML = `
+            <div style="padding: 1rem; background: var(--background-tertiary); border-radius: var(--border-radius-small); margin-bottom: 1rem;">
+              <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">AI Summary</h4>
+              <p style="color: var(--text-secondary); line-height: 1.6;">${data.summary}</p>
+            </div>
+          `;
+          openModal('summary-modal');
+        } else {
+          showToast(data.error, 'error');
+        }
+      } catch (error) {
+        showToast('Error generating summary', 'error');
+      }
+    }
+
+    async function rewriteHeadline(articleId) {
+      showLoading('headline-modal');
+      
+      try {
+        const response = await fetch('/api/rewrite-headline', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({article_id: articleId})
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          document.getElementById('headline-content').innerHTML = `
+            <div style="margin-bottom: 1rem;">
+              <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Original Headline</h4>
+              <p style="color: var(--text-secondary); padding: 1rem; background: var(--background-tertiary); border-radius: var(--border-radius-small);">${data.original}</p>
+            </div>
+            <div>
+              <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">AI Rewritten</h4>
+              <p style="color: var(--text-secondary); padding: 1rem; background: var(--background-tertiary); border-radius: var(--border-radius-small);">${data.rewritten}</p>
+            </div>
+          `;
+          openModal('headline-modal');
+        } else {
+          showToast(data.error, 'error');
+        }
+      } catch (error) {
+        showToast('Error rewriting headline', 'error');
+      }
+    }
+
+    // Recommendations
+    async function loadRecommendations() {
+      try {
+        const response = await fetch('/api/recommendations?limit=5');
+        const recommendations = await response.json();
+        
+        const list = document.getElementById('recommendations-list');
+        
+        if (recommendations.length === 0) {
+          list.innerHTML = '<div class="recommendation-item"><div class="recommendation-title">No recommendations yet</div><div class="recommendation-meta">Like some articles to get personalized recommendations</div></div>';
+          return;
+        }
+        
+        list.innerHTML = recommendations.map(article => `
+          <div class="recommendation-item" onclick="openArticle('${article.url}')">
+            <div class="recommendation-title">${article.title}</div>
+            <div class="recommendation-meta">${article.source} • ${article.read_time} min read</div>
+          </div>
+        `).join('');
+      } catch (error) {
+        document.getElementById('recommendations-list').innerHTML = '<div class="recommendation-item"><div class="recommendation-title">Error loading recommendations</div></div>';
+      }
+    }
+
+    // User Profile
+    async function loadUserProfile() {
+      try {
+        const response = await fetch('/api/user-profile');
+        const profile = await response.json();
+        
+        if (response.ok) {
+          userProfile = profile;
+          
+          // Update UI based on profile
+          likedArticles.clear();
+          dislikedArticles.clear();
+          readArticles.clear();
+          
+          profile.liked_articles.forEach(id => likedArticles.add(id));
+          profile.disliked_articles.forEach(id => dislikedArticles.add(id));
+          profile.read_articles.forEach(id => readArticles.add(id));
+          
+          updateUserStats();
+          return profile;
+        } else {
+          throw new Error(profile.error || 'Failed to load profile');
+        }
+      } catch (error) {
+        console.error('Error loading user profile:', error);
+        throw error;
+      }
+    }
+
+    async function showProfile() {
+      // Always reload the latest profile data
+      showToast('Loading profile...', 'info');
+      
+      try {
+        await loadUserProfile();
+        
+        if (!userProfile) {
+          showToast('Failed to load profile', 'error');
+        return;
+        }
+        
+        document.getElementById('profile-content').innerHTML = `
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Reading Preferences</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+              ${Object.keys(userProfile.topic_preferences).length > 0 ? 
+                Object.entries(userProfile.topic_preferences).map(([topic, count]) => `
+                  <span class="topic-tag" style="background: var(--accent-color); color: white;">${topic} (${count})</span>
+                `).join('') : 
+                '<span style="color: var(--text-secondary);">No preferences yet. Like some articles!</span>'
+              }
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 1.5rem;">
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Sentiment Preferences</h4>
+            <div style="display: flex; gap: 1rem;">
+              ${Object.entries(userProfile.sentiment_preferences).map(([sentiment, count]) => `
+                <div style="text-align: center;">
+                  <div style="font-weight: 600; color: var(--text-primary);">${count}</div>
+                  <div style="font-size: 0.8rem; color: var(--text-secondary); text-transform: capitalize;">${sentiment}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div>
+            <h4 style="margin-bottom: 0.5rem; color: var(--text-primary);">Reading Stats</h4>
+            <div style="color: var(--text-secondary);">
+              <div>Articles liked: ${userProfile.liked_articles.length}</div>
+              <div>Articles read: ${userProfile.read_articles.length}</div>
+              <div>Average reading time: ${userProfile.reading_time_preferences.length > 0 ? Math.round(userProfile.reading_time_preferences.reduce((a, b) => a + b, 0) / userProfile.reading_time_preferences.length) : 0} minutes</div>
+            </div>
+          </div>
+        `;
+        
+        openModal('profile-modal');
+      } catch (error) {
+        showToast('Error loading profile', 'error');
+        console.error('Profile loading error:', error);
+      }
+    }
+
+    function updateUserStats() {
+      document.getElementById('liked-count').textContent = likedArticles.size;
+      document.getElementById('read-count').textContent = readArticles.size;
+      
+      const totalReadingTime = Array.from(readArticles).reduce((total, articleId) => {
+        const article = document.querySelector(`[data-article-id="${articleId}"]`);
+        if (article) {
+          const readTimeElement = article.querySelector('.read-time');
+          if (readTimeElement) {
+            const readTime = parseInt(readTimeElement.textContent.match(/\d+/)[0]);
+            return total + readTime;
+          }
+        }
+        return total;
+      }, 0);
+      
+      document.getElementById('reading-time').textContent = `${totalReadingTime} min`;
+    }
+
+    // Utility functions
+    function openArticle(url) {
+      window.open(url, '_blank');
+    }
+
+    function refreshNews() {
+      window.location.reload();
+    }
+
+    function toggleView(view) {
+      currentView = view;
+      const grid = document.getElementById('articles-grid');
+      
+      if (view === 'list') {
+        grid.classList.add('list-view');
+      } else {
+        grid.classList.remove('list-view');
+      }
+    }
+
+    function filterByTopic(topicId) {
+      const articles = document.querySelectorAll('.article-card');
+      
+      articles.forEach(article => {
+        const topics = article.dataset.topics;
+        article.style.display = topics.includes(topicId) ? 'block' : 'none';
+      });
+    }
+
+    function openModal(modalId) {
+      document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).classList.remove('active');
+    }
+
+    function showLoading(modalId) {
+      document.getElementById(modalId.replace('-modal', '-content')).innerHTML = `
+        <div style="text-align: center; padding: 2rem;">
+          <div class="spinner" style="margin: 0 auto 1rem;"></div>
+          <p style="color: var(--text-secondary);">Loading...</p>
+        </div>
+      `;
+      openModal(modalId);
+    }
+
+    function showToast(message, type = 'info') {
+      // Create toast element
+      const toast = document.createElement('div');
+      toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: var(--background-secondary);
+        color: var(--text-primary);
+        padding: 1rem 1.5rem;
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-heavy);
+        z-index: 10000;
+        transform: translateX(100%);
+        transition: transform 0.3s ease;
+      `;
+      
+      // Set color based on type
+      if (type === 'success') toast.style.borderLeftColor = 'var(--success-color)';
+      if (type === 'error') toast.style.borderLeftColor = 'var(--error-color)';
+      if (type === 'warning') toast.style.borderLeftColor = 'var(--warning-color)';
+      
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      
+      // Animate in
+      setTimeout(() => toast.style.transform = 'translateX(0)', 100);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        toast.style.transform = 'translateX(100%)';
+        setTimeout(() => document.body.removeChild(toast), 300);
+      }, 3000);
+    }
+
+    // Close modals when clicking outside
+    document.addEventListener('click', function(e) {
+      if (e.target.classList.contains('modal')) {
+        e.target.classList.remove('active');
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal.active').forEach(modal => {
+          modal.classList.remove('active');
+        });
+      }
+    });
+  </script>
+</body>
+</html>
